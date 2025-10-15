@@ -10,6 +10,39 @@ import {
 } from '@podcast-framework/core';
 
 /**
+ * CORS Configuration: Allowed Origins
+ *
+ * Configure the domains allowed to make requests to this API.
+ * Always include your production domain and localhost for development.
+ *
+ * SECURITY: Never use "*" wildcard in production - it allows any website
+ * to make requests to your API, enabling CSRF attacks.
+ */
+const ALLOWED_ORIGINS = [
+  'https://yourpodcast.com',           // TODO: Replace with your production domain
+  'https://www.yourpodcast.com',       // TODO: Replace with your www domain
+  'http://localhost:4321',             // Development
+  'http://localhost:3000',             // Alternative dev port
+];
+
+/**
+ * Get CORS headers with origin validation
+ */
+function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
+  // Check if origin is in allowed list
+  const origin = requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)
+    ? requestOrigin
+    : ALLOWED_ORIGINS[0]; // Fallback to primary domain
+
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+  };
+}
+
+/**
  * Rate limiting: In-memory store
  *
  * KNOWN LIMITATION (Acceptable for MVP):
@@ -43,14 +76,13 @@ function checkRateLimit(ip: string): boolean {
 }
 
 // OPTIONS handler for CORS preflight
-export const OPTIONS: APIRoute = async () => {
+export const OPTIONS: APIRoute = async ({ request }) => {
+  const origin = request.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   return new Response(null, {
     status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-    },
+    headers: corsHeaders,
   });
 };
 
@@ -58,12 +90,9 @@ export const OPTIONS: APIRoute = async () => {
 export const POST: APIRoute = async (context) => {
   const { request } = context;
 
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json",
-  };
+  // Get CORS headers with origin validation
+  const origin = request.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
 
   try {
     // Rate limiting
@@ -77,16 +106,25 @@ export const POST: APIRoute = async (context) => {
 
     const data = await request.json();
 
+    // Get required environment variables
+    const env = getRequiredEnv([
+      'SANITY_PROJECT_ID',
+      'SANITY_API_TOKEN',
+      'RESEND_API_KEY',
+      'RESEND_FROM_EMAIL',
+      'NOTIFICATION_EMAIL'
+    ], context);
+
     // Initialize contribution service
     const contributionService = new ContributionService({
-      sanityProjectId: getRequiredEnv(context, 'SANITY_PROJECT_ID'),
-      sanityDataset: getEnv(context, 'SANITY_DATASET') || 'production',
-      sanityApiToken: getRequiredEnv(context, 'SANITY_API_TOKEN'),
+      sanityProjectId: env.SANITY_PROJECT_ID,
+      sanityDataset: getEnv('SANITY_DATASET', context) || 'production',
+      sanityApiToken: env.SANITY_API_TOKEN,
       sanityApiVersion: '2024-01-01',
-      resendApiKey: getRequiredEnv(context, 'RESEND_API_KEY'),
-      resendFromEmail: getRequiredEnv(context, 'RESEND_FROM_EMAIL'),
-      notificationEmail: getRequiredEnv(context, 'NOTIFICATION_EMAIL'),
-      studioUrl: getEnv(context, 'STUDIO_URL'),
+      resendApiKey: env.RESEND_API_KEY,
+      resendFromEmail: env.RESEND_FROM_EMAIL,
+      notificationEmail: env.NOTIFICATION_EMAIL,
+      studioUrl: getEnv('STUDIO_URL', context),
     });
 
     // Call contribution service

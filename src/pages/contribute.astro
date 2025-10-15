@@ -338,6 +338,10 @@ if (!podcastInfo?.isActive) {
     const selectedType = contributionTypeSelect.value;
 
     if (selectedType && fieldTemplates[selectedType as keyof typeof fieldTemplates]) {
+      // SECURITY NOTE: Using innerHTML here is safe because fieldTemplates
+      // are static strings defined in this file with no user input.
+      // If this code is ever modified to include dynamic content, use
+      // DOMPurify or create elements programmatically with createElement().
       dynamicFields.innerHTML = fieldTemplates[selectedType as keyof typeof fieldTemplates];
 
       // Setup character counters for the new fields
