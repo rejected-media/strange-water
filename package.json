@@ -1,0 +1,24 @@
+{
+  "name": "my-podcast",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A podcast website built with Podcast Framework",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@podcast-framework/core": "^0.1.0",
+    "@podcast-framework/sanity-schema": "^1.0.0",
+    "@sanity/client": "^6.0.0",
+    "astro": "^5.1.0",
+    "sanity": "^3.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "typescript": "^5.3.0"
+  }
+}
