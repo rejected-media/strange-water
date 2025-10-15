@@ -53,6 +53,8 @@ if (episode.spotifyLink) {
 // Prepare meta tags for SEO
 const metaDescription = stripHTML(episode.description).substring(0, 160);
 const pageTitle = `${episode.title} - ${siteName}`;
+// OG Image: Prefer episode cover, fallback to podcast logo
+// If both are undefined, BaseLayout will use its built-in fallback image
 const ogImage = episode.coverImage?.url || podcastInfo?.logo?.url;
 ---
 

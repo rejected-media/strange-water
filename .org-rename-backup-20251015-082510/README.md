@@ -1,6 +1,6 @@
 # Podcast Template
 
-**A ready-to-use template for creating beautiful podcast websites** built with [Podcast Framework](https://github.com/rejected-media/podcast-framework).
+**A ready-to-use template for creating beautiful podcast websites** built with [Podcast Framework](https://github.com/podcast-framework/podcast-framework).
 
 ---
 
@@ -152,11 +152,11 @@ features: {
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rejected-media/podcast-template)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/podcast-framework/podcast-template)
 
 ### Netlify
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/rejected-media/podcast-template)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/podcast-framework/podcast-template)
 
 ---
 
@@ -164,9 +164,9 @@ features: {
 
 ### Framework Documentation
 
-- [Main Repository](https://github.com/rejected-media/podcast-framework)
-- [Component Reference](https://github.com/rejected-media/podcast-framework/blob/main/packages/core/COMPONENTS.md)
-- [CLI Commands](https://github.com/rejected-media/podcast-framework/blob/main/packages/cli/README.md)
+- [Main Repository](https://github.com/podcast-framework/podcast-framework)
+- [Component Reference](https://github.com/podcast-framework/podcast-framework/blob/main/packages/core/COMPONENTS.md)
+- [CLI Commands](https://github.com/podcast-framework/podcast-framework/blob/main/packages/cli/README.md)
 
 ### Guides
 
@@ -201,7 +201,7 @@ npx @podcast-framework/cli update
 
 ## 🤝 Contributing
 
-Found a bug or want to contribute? Visit the [main repository](https://github.com/rejected-media/podcast-framework).
+Found a bug or want to contribute? Visit the [main repository](https://github.com/podcast-framework/podcast-framework).
 
 ---
 
@@ -213,7 +213,7 @@ MIT License - see [LICENSE](./LICENSE)
 
 ## 🙏 Built With
 
-- [Podcast Framework](https://github.com/rejected-media/podcast-framework)
+- [Podcast Framework](https://github.com/podcast-framework/podcast-framework)
 - [Astro](https://astro.build)
 - [Sanity](https://www.sanity.io)
 - [Tailwind CSS](https://tailwindcss.com)

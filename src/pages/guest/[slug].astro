@@ -32,7 +32,8 @@ const { guest } = Astro.props as { guest: Guest };
 const podcastInfo = await getPodcast();
 const siteName = podcastInfo?.name || "Podcast";
 
-// OG Image: Use guest photo, fallback to podcast logo
+// OG Image: Prefer guest photo, fallback to podcast logo
+// If both are undefined, BaseLayout will use its built-in fallback image
 const ogImage = guest.photo?.url || podcastInfo?.logo?.url;
 ---
 
