@@ -6,90 +6,49 @@
  */
 
 import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
-import { getPodcast } from '@podcast-framework/core/sanity-helpers';
-import config from '@config';
+import { getPodcast, getFeaturedEpisodes as getFeatured } from '@podcast-framework/core';
+import FeaturedEpisodesCarousel from '@podcast-framework/core/components/FeaturedEpisodesCarousel.astro';
 
-// Fetch podcast info (auto-configured from environment)
+// Fetch podcast info and featured episodes
 const podcastInfo = await getPodcast();
+const featuredEpisodes = await getFeatured();
+const siteName = podcastInfo?.name || "My Podcast";
 ---
 
 <BaseLayout
-  title={`${config.name} - Home`}
-  description={config.description}
-  podcastInfo={podcastInfo}
+  title={siteName}
+  description={podcastInfo?.description || "A podcast about interesting topics"}
 >
-  <main class="max-w-4xl mx-auto px-4 py-12 flex-grow">
+  <main class="max-w-6xl mx-auto px-4 py-12 flex-grow">
     <!-- Hero Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-5xl font-bold mb-4">{config.name}</h1>
-      {config.tagline && (
-        <p class="text-xl text-gray-600 mb-6">{config.tagline}</p>
+    <div class="text-center mb-16">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">{siteName}</h1>
+      {podcastInfo?.tagline && (
+        <p class="text-xl md:text-2xl text-gray-600 mb-8">{podcastInfo.tagline}</p>
       )}
-      <p class="text-lg text-gray-700 max-w-2xl mx-auto">
-        {config.description}
-      </p>
+      {podcastInfo?.description && (
+        <p class="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+          {podcastInfo.description}
+        </p>
+      )}
     </div>
 
-    <!-- Getting Started -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-8 mb-8">
-      <h2 class="text-2xl font-bold mb-4">🎉 Your Podcast Website is Ready!</h2>
-      <p class="text-gray-700 mb-4">
-        This template was created with <strong>@podcast-framework</strong>
-      </p>
+    <!-- Featured Episodes Carousel -->
+    {featuredEpisodes && featuredEpisodes.length > 0 && (
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center mb-8">Featured Episodes</h2>
+        <FeaturedEpisodesCarousel episodes={featuredEpisodes} />
+      </section>
+    )}
 
-      <h3 class="font-semibold mb-2">Next Steps:</h3>
-      <ol class="list-decimal list-inside space-y-2 text-gray-700">
-        <li>Set up your Sanity CMS project</li>
-        <li>Configure environment variables (copy .env.template to .env.local)</li>
-        <li>Import your podcast episodes (from RSS or manually)</li>
-        <li>Customize your theme and colors in Sanity</li>
-        <li>Add your logo and branding</li>
-        <li>Deploy to Cloudflare Pages, Vercel, or Netlify</li>
-      </ol>
-    </div>
-
-    <!-- Features -->
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-white rounded-lg shadow-sm p-6">
-        <h3 class="font-semibold text-lg mb-2">📦 What's Included</h3>
-        <ul class="space-y-1 text-sm text-gray-700">
-          <li>✅ 8 production-tested components</li>
-          <li>✅ Responsive design</li>
-          <li>✅ SEO optimized</li>
-          <li>✅ Google Analytics ready</li>
-          <li>✅ Newsletter signup</li>
-          <li>✅ Episode search</li>
-          <li>✅ Transcript viewer</li>
-          <li>✅ Multi-cloud hosting support</li>
-        </ul>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm p-6">
-        <h3 class="font-semibold text-lg mb-2">🛠️ Customize</h3>
-        <ul class="space-y-1 text-sm text-gray-700">
-          <li>• Override any component</li>
-          <li>• Extend Sanity schemas</li>
-          <li>• Configure theme colors</li>
-          <li>• Add custom pages</li>
-          <li>• Choose your features</li>
-          <li>• Use your own domain</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Documentation Link -->
-    <div class="text-center mt-12">
-      <p class="text-gray-600">
-        Need help?{' '}
-        <a
-          href="https://github.com/rejected-media/podcast-framework"
-          class="text-blue-600 hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Documentation
-        </a>
-      </p>
+    <!-- Call to Action -->
+    <div class="text-center">
+      <a
+        href="/episodes"
+        class="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
+      >
+        Browse All Episodes
+      </a>
     </div>
   </main>
 </BaseLayout>
