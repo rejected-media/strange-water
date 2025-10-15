@@ -6,14 +6,11 @@
  */
 
 import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
-import { createSanityClient, getPodcastInfo } from '@podcast-framework/core';
-import config from '../../podcast.config.js';
+import { getPodcast } from '@podcast-framework/core/sanity-helpers';
+import config from '@config';
 
-// Create Sanity client
-const sanityClient = createSanityClient(config.sanity);
-
-// Fetch podcast info from Sanity
-const podcastInfo = await getPodcastInfo(sanityClient);
+// Fetch podcast info (auto-configured from environment)
+const podcastInfo = await getPodcast();
 ---
 
 <BaseLayout
