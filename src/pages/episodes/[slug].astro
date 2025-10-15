@@ -1,0 +1,269 @@
+---
+export const prerender = true;
+
+/**
+ * Episode Detail Page
+ *
+ * Displays individual episode with:
+ * - Episode metadata (title, number, date, duration)
+ * - Hosts and guests with photos
+ * - Description
+ * - Transcript viewer
+ * - Audio player (Spotify embed)
+ * - Platform links (Spotify, Apple, YouTube, RSS)
+ * - Show notes
+ */
+
+import {
+  getStaticPathsForEpisodes,
+  getEpisode,
+  getPodcast,
+  formatDate,
+  stripHTML
+} from '@podcast-framework/core';
+import type { Episode } from '@podcast-framework/core';
+import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
+import TranscriptViewer from '@podcast-framework/core/components/TranscriptViewer.astro';
+
+// Generate static paths for all episodes at build time
+export async function getStaticPaths() {
+  return await getStaticPathsForEpisodes();
+}
+
+// Get episode from props (passed from getStaticPaths)
+const { episode } = Astro.props as { episode: Episode };
+
+// Fetch podcast info for branding and show ID
+const podcastInfo = await getPodcast();
+const siteName = podcastInfo?.name || "Podcast";
+
+// Extract Spotify episode ID from spotifyLink and build embed URL
+let spotifyEmbedUrl = podcastInfo?.spotifyShowId
+  ? `https://open.spotify.com/embed/show/${podcastInfo.spotifyShowId}?utm_source=generator`
+  : '';
+
+if (episode.spotifyLink) {
+  // Extract episode ID from URL like: https://open.spotify.com/episode/5vQKPYz3yNPqVYZqWqWqWq
+  const episodeIdMatch = episode.spotifyLink.match(/episode\/([a-zA-Z0-9]+)/);
+  if (episodeIdMatch && episodeIdMatch[1]) {
+    spotifyEmbedUrl = `https://open.spotify.com/embed/episode/${episodeIdMatch[1]}?utm_source=generator`;
+  }
+}
+
+// Prepare meta tags for SEO
+const metaDescription = stripHTML(episode.description).substring(0, 160);
+const pageTitle = `${episode.title} - ${siteName}`;
+const ogImage = episode.coverImage?.url || podcastInfo?.logo?.url;
+---
+
+<BaseLayout title={pageTitle} description={metaDescription} ogImage={ogImage}>
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 py-12 flex-grow">
+    <!-- Episode Header -->
+    <div class="mb-8">
+      <p class="text-sm text-gray-500 uppercase tracking-wide mb-2">
+        Episode {episode.episodeNumber}
+      </p>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        {episode.title}
+      </h1>
+      <div class="flex gap-4 text-sm text-gray-600">
+        <span>{formatDate(episode.publishDate)}</span>
+        {episode.duration && (
+          <>
+            <span>•</span>
+            <span>{episode.duration}</span>
+          </>
+        )}
+      </div>
+    </div>
+
+    <!-- Hosts and Guests Section -->
+    {(episode.hosts?.length > 0 || episode.guests?.length > 0) && (
+      <div class="mb-8 flex flex-col md:flex-row gap-6 md:items-start">
+        <!-- Hosts Section -->
+        {episode.hosts && episode.hosts.length > 0 && (
+          <div>
+            <h2 class="text-lg font-semibold mb-3">{episode.hosts.length === 1 ? 'Host' : 'Hosts'}</h2>
+            <div class="flex flex-wrap gap-4">
+              {episode.hosts.map((host) => (
+                <div class="flex items-center gap-3 bg-white rounded-lg p-3 shadow-sm">
+                  {host.photo?.url && (
+                    <img
+                      src={host.photo.url}
+                      alt={host.name}
+                      class="w-12 h-12 rounded-full object-cover"
+                    />
+                  )}
+                  <div>
+                    <p class="font-semibold text-gray-900">{host.name}</p>
+                    {(host.twitter || host.website || host.linkedin) && (
+                      <div class="flex gap-2 mt-1">
+                        {host.twitter && (
+                          <a
+                            href={`https://twitter.com/${host.twitter}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-xs text-blue-600 hover:text-blue-800"
+                          >
+                            @{host.twitter}
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Guests Section -->
+        {episode.guests && episode.guests.length > 0 && (
+          <div>
+            <h2 class="text-lg font-semibold mb-3">{episode.guests.length === 1 ? 'Guest' : 'Guests'}</h2>
+            <div class="flex flex-wrap gap-4">
+              {episode.guests.map((guest) => (
+                <a
+                  href={`/guest/${guest.slug.current}`}
+                  class="flex items-center gap-3 bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow group"
+                >
+                  {guest.photo?.url && (
+                    <img
+                      src={guest.photo.url}
+                      alt={guest.name}
+                      class="w-12 h-12 rounded-full object-cover"
+                    />
+                  )}
+                  <div>
+                    <p class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{guest.name}</p>
+                    {(guest.twitter || guest.website || guest.linkedin) && (
+                      <div class="flex gap-2 mt-1">
+                        {guest.twitter && (
+                          <span class="text-xs text-gray-500">
+                            @{guest.twitter}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
+    <!-- Episode Description -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">About This Episode</h2>
+      <div class="text-gray-700 leading-relaxed prose prose-blue max-w-none [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800" set:html={episode.description} />
+    </div>
+
+    <!-- Transcript Viewer -->
+    {(episode.transcript || episode.transcriptSegments) && (
+      <TranscriptViewer
+        transcript={episode.transcript}
+        segments={episode.transcriptSegments}
+        episodeNumber={episode.episodeNumber}
+      />
+    )}
+
+    <!-- Audio Player Section -->
+    {spotifyEmbedUrl && (
+      <div class="mb-8 bg-white rounded-lg shadow-sm p-6">
+        <iframe
+          style="border-radius:12px"
+          src={spotifyEmbedUrl}
+          width="100%"
+          height="232"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      </div>
+    )}
+
+    <!-- Platform Links -->
+    {(episode.spotifyLink || episode.youtubeLink || episode.applePodcastLink || podcastInfo?.rssUrl) && (
+      <div class="mb-12">
+        <h3 class="text-lg font-semibold mb-3 text-center">Listen to this episode on:</h3>
+        <div class="flex flex-wrap gap-3 justify-center">
+          {episode.spotifyLink && (
+            <a
+              href={episode.spotifyLink}
+              class="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium inline-flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+              Spotify
+            </a>
+          )}
+          {episode.applePodcastLink && (
+            <a
+              href={episode.applePodcastLink}
+              class="px-5 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium inline-flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2.182c5.423 0 9.818 4.395 9.818 9.818 0 5.423-4.395 9.818-9.818 9.818-5.423 0-9.818-4.395-9.818-9.818 0-5.423 4.395-9.818 9.818-9.818zM12 5.455c-1.8 0-3.273 1.472-3.273 3.272 0 1.801 1.472 3.273 3.273 3.273s3.273-1.472 3.273-3.273c0-1.8-1.472-3.272-3.273-3.272zm0 1.636c.905 0 1.636.731 1.636 1.636 0 .905-.731 1.637-1.636 1.637-.905 0-1.636-.732-1.636-1.637 0-.905.731-1.636 1.636-1.636zm0 4.364c-2.168 0-3.927 1.759-3.927 3.927v2.182c0 .452.366.818.818.818h6.218c.452 0 .818-.366.818-.818v-2.182c0-2.168-1.759-3.927-3.927-3.927z"/>
+              </svg>
+              Apple Podcasts
+            </a>
+          )}
+          {episode.youtubeLink && (
+            <a
+              href={episode.youtubeLink}
+              class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium inline-flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+              YouTube
+            </a>
+          )}
+          {podcastInfo?.rssUrl && (
+            <a
+              href={podcastInfo.rssUrl}
+              class="px-5 py-2.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium inline-flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.755-23.954-24-24v4.812z"/>
+              </svg>
+              RSS
+            </a>
+          )}
+        </div>
+      </div>
+    )}
+
+    <!-- Show Notes (if available) -->
+    {episode.showNotes && episode.showNotes.length > 0 && (
+      <div class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4">Show Notes</h2>
+        <div class="prose prose-blue max-w-none">
+          {episode.showNotes.map((block: any) => {
+            if (block._type === 'block') {
+              return (
+                <p class="text-gray-700 mb-4">
+                  {block.children?.map((child: any) => child.text).join('')}
+                </p>
+              );
+            }
+            return null;
+          })}
+        </div>
+      </div>
+    )}
+  </main>
+</BaseLayout>
