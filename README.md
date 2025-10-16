@@ -105,8 +105,8 @@ The free tier includes unlimited Studio hosting.
 
 ### Framework Packages
 
-- **@podcast-framework/core** - Components, layouts, utilities
-- **@podcast-framework/sanity-schema** - CMS schemas
+- **@rejected-media/podcast-framework-core** - Components, layouts, utilities
+- **@rejected-media/podcast-framework-sanity-schema** - CMS schemas
 - **Astro 5** - Static site generator
 - **Sanity 3** - Headless CMS
 
@@ -155,7 +155,7 @@ The framework automatically uses your version!
 
 ```typescript
 // sanity/sanity.config.ts
-import { extendEpisodeSchema } from '@podcast-framework/sanity-schema';
+import { extendEpisodeSchema } from '@rejected-media/podcast-framework-sanity-schema';
 
 const episode = extendEpisodeSchema([
   {

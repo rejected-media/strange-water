@@ -6,7 +6,7 @@ import {
   getRequiredEnv,
   getEnv,
   logError
-} from '@podcast-framework/core';
+} from '@rejected-media/podcast-framework-core';
 
 /**
  * CORS Configuration: Allowed Origins

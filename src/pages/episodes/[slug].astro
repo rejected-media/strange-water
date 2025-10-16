@@ -21,10 +21,10 @@ import {
   getTheme,
   formatDate,
   stripHTML
-} from '@podcast-framework/core';
-import type { Episode } from '@podcast-framework/core';
+} from '@rejected-media/podcast-framework-core';
+import type { Episode } from '@rejected-media/podcast-framework-core';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TranscriptViewer from '@podcast-framework/core/components/TranscriptViewer.astro';
+import TranscriptViewer from '@rejected-media/podcast-framework-core/components/TranscriptViewer.astro';
 
 // Generate static paths for all episodes at build time
 export async function getStaticPaths() {

@@ -2,7 +2,7 @@
 
 /* Tell Tailwind where to scan for utility classes */
 @source "../**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}";
-@source "../../node_modules/@podcast-framework/core/**/*.{astro,js,ts}";
+@source "../../node_modules/@rejected-media/podcast-framework-core/**/*.{astro,js,ts}";
 
 /* Screen reader only class for accessibility */
 .sr-only {

@@ -2,7 +2,7 @@
 export default {
   content: [
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
-    './node_modules/@podcast-framework/core/**/*.{astro,js,ts}'
+    './node_modules/@rejected-media/podcast-framework-core/**/*.{astro,js,ts}'
   ],
   theme: {
     extend: {},

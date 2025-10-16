@@ -14,9 +14,9 @@ export const prerender = true;
  * - Fallback content if no CMS config exists
  */
 
-import { getPodcast, getAboutPageConfig, getTheme } from '@podcast-framework/core';
+import { getPodcast, getAboutPageConfig, getTheme } from '@rejected-media/podcast-framework-core';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import BlockContent from '@podcast-framework/core/components/BlockContent.astro';
+import BlockContent from '@rejected-media/podcast-framework-core/components/BlockContent.astro';
 
 // Fetch data from Sanity
 const podcastInfo = await getPodcast();

@@ -15,11 +15,11 @@ import {
   host,
   podcast,
   contribution
-} from '@podcast-framework/sanity-schema';
+} from '@rejected-media/podcast-framework-sanity-schema';
 
 // You can extend schemas with custom fields if needed
 // Example:
-// import { extendEpisodeSchema } from '@podcast-framework/sanity-schema';
+// import { extendEpisodeSchema } from '@rejected-media/podcast-framework-sanity-schema';
 // const customEpisode = extendEpisodeSchema([
 //   { name: 'sponsor', type: 'reference', to: [{ type: 'sponsor' }] }
 // ]);
