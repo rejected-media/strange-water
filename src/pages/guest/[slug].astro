@@ -14,6 +14,7 @@ import {
   getStaticPathsForGuests,
   getGuest,
   getPodcast,
+  getTheme,
   formatDate,
   stripHTML
 } from '@podcast-framework/core';
@@ -25,11 +26,20 @@ export async function getStaticPaths() {
   return await getStaticPathsForGuests();
 }
 
-// Get guest from props (passed from getStaticPaths)
-const { guest } = Astro.props as { guest: Guest };
+// Get the slug from params
+const { slug } = Astro.params;
 
-// Fetch podcast info for branding
+// Fetch guest data with episodes
+const guest = await getGuest(slug as string);
+
+// Handle guest not found
+if (!guest) {
+  return new Response('Guest not found', { status: 404 });
+}
+
+// Fetch podcast info and theme for branding
 const podcastInfo = await getPodcast();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 
 // OG Image: Prefer guest photo, fallback to podcast logo
@@ -41,6 +51,8 @@ const ogImage = guest.photo?.url || podcastInfo?.logo?.url;
   title={`${guest.name} - ${siteName}`}
   description={guest.bio || `${guest.name} has appeared on ${siteName}. Explore their episodes and background.`}
   ogImage={ogImage}
+  podcastInfo={podcastInfo}
+  theme={theme}
 >
   <main class="max-w-4xl mx-auto px-4 py-12 flex-grow">
     <!-- Guest Header -->
