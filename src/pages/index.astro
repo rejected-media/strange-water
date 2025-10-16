@@ -179,7 +179,7 @@ const spotifyUrl = podcastInfo?.spotifyUrl || "#";
           </div>
 
           <!-- Newsletter Signup (if enabled) -->
-          {(!homepageConfig?.newsletter || homepageConfig?.newsletter?.enabled !== false) && (
+          {podcastInfo?.isActive && podcastInfo?.newsletterEnabled && (
             <div class="mb-8 flex justify-center">
               <NewsletterSignup variant="inline" />
             </div>

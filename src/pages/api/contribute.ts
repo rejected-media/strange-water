@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import type { APIRoute } from 'astro';
 import {
   RATE_LIMIT_MAX_REQUESTS,
