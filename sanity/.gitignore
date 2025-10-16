@@ -1,0 +1,10 @@
+# Sanity Studio build artifacts
+dist/
+.sanity/
+
+# Sanity CLI cache
+.sanity-cache/
+
+# Environment variables (should be in root .env)
+.env
+.env.local

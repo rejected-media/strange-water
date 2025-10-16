@@ -46,13 +46,58 @@ nano .env.local
 - `SANITY_DATASET` - Usually "production"
 - `SANITY_TOKEN` - Create a token in Sanity dashboard
 
-### 6. Start Development Server
+### 6. Start Development Servers
 
+**Start the website:**
 ```bash
 npm run dev
 ```
 
 Open [http://localhost:4321](http://localhost:4321)
+
+**Start Sanity Studio (in another terminal):**
+```bash
+npm run sanity:dev
+```
+
+Open [http://localhost:3333](http://localhost:3333)
+
+---
+
+## 🎛️ Sanity Studio
+
+### Local Development
+
+The Sanity Studio is your content management interface. Run it locally to add/edit episodes:
+
+```bash
+npm run sanity:dev
+```
+
+This starts the Studio at http://localhost:3333
+
+### Deploy Studio to Sanity Cloud
+
+To make your Studio accessible from anywhere (recommended for production):
+
+1. Make sure your `.env.local` has correct credentials
+2. Deploy to Sanity Cloud:
+   ```bash
+   npm run sanity:deploy
+   ```
+3. Follow the prompts to choose a studio hostname
+4. Your Studio will be available at `https://your-studio.sanity.studio`
+
+The free tier includes unlimited Studio hosting.
+
+### Studio Features
+
+- Create and edit podcast episodes
+- Manage guests and hosts
+- Configure podcast metadata
+- Upload audio files
+- Add episode transcripts
+- Rich text editing for show notes
 
 ---
 

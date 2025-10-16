@@ -33,10 +33,10 @@ export default defineConfig({
   name: 'default',
   title: 'My Podcast', // TODO: Update this
 
-  // TODO: Add your Sanity project ID here
-  // Get it from https://sanity.io/manage
-  projectId: 'your-project-id',
-  dataset: 'production',
+  // Project ID and dataset from environment variables
+  // Set these in your .env.local file
+  projectId: process.env.SANITY_PROJECT_ID || '',
+  dataset: process.env.SANITY_DATASET || 'production',
 
   plugins: [
     structureTool(),
