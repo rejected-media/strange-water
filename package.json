@@ -14,6 +14,7 @@
     "sanity:deploy": "sanity deploy"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.10",
     "@astrojs/node": "^9.5.0",
     "@rejected-media/podcast-framework-core": "^0.1.1",
     "@rejected-media/podcast-framework-sanity-schema": "^1.0.0",
