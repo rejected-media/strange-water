@@ -13,13 +13,15 @@ export const prerender = true;
 
 import {
   getGuests,
-  getPodcast
+  getPodcast,
+  getTheme
 } from '@podcast-framework/core';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 // Fetch all guests
 const guests = await getGuests();
 const podcastInfo = await getPodcast();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 
 // Sort guests alphabetically by name
@@ -30,6 +32,7 @@ const sortedGuests = guests.sort((a, b) => a.name.localeCompare(b.name));
   title={`Guests - ${siteName}`}
   description={`Browse all ${guests.length} guests who have appeared on ${siteName}. Explore their backgrounds, expertise, and episodes.`}
   podcastInfo={podcastInfo}
+  theme={theme}
 >
   <main class="max-w-7xl mx-auto px-4 py-12 flex-grow">
     <!-- Page Header -->

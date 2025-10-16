@@ -14,6 +14,7 @@ export const prerender = true;
 import {
   getEpisodes,
   getPodcast,
+  getTheme,
   formatDate,
   stripHTML
 } from '@podcast-framework/core';
@@ -23,6 +24,7 @@ import EpisodeSearch from '@podcast-framework/core/components/EpisodeSearch.astr
 // Fetch all episodes and podcast info from Sanity
 const episodes = await getEpisodes();
 const podcastInfo = await getPodcast();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 ---
 
@@ -30,6 +32,7 @@ const siteName = podcastInfo?.name || "Podcast";
   title={`All Episodes - ${siteName}`}
   description={`Browse all episodes of ${siteName}. Deep conversations with builders, researchers, and visionaries.`}
   podcastInfo={podcastInfo}
+  theme={theme}
 >
   <main class="max-w-6xl mx-auto px-4 py-12 flex-grow">
     <!-- Archive or Coming Soon Message -->
