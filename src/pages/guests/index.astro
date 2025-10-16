@@ -29,6 +29,7 @@ const sortedGuests = guests.sort((a, b) => a.name.localeCompare(b.name));
 <BaseLayout
   title={`Guests - ${siteName}`}
   description={`Browse all ${guests.length} guests who have appeared on ${siteName}. Explore their backgrounds, expertise, and episodes.`}
+  podcastInfo={podcastInfo}
 >
   <main class="max-w-7xl mx-auto px-4 py-12 flex-grow">
     <!-- Page Header -->
