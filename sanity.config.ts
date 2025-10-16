@@ -33,10 +33,10 @@ export default defineConfig({
   name: 'default',
   title: 'My Podcast', // TODO: Update this
 
-  // Project ID and dataset from environment variables
-  // Set these in your .env.local file
-  projectId: process.env.SANITY_PROJECT_ID || '',
-  dataset: process.env.SANITY_DATASET || 'production',
+  // Project ID and dataset
+  // These are required for cloud deployment to sanity.studio
+  projectId: 'ej6443ov',
+  dataset: 'production',
 
   plugins: [
     structureTool(),
