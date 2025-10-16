@@ -53,7 +53,7 @@ const spotifyUrl = podcastInfo?.spotifyUrl || "#";
             {spotifyUrl && spotifyUrl !== "#" && (
               <a
                 href={spotifyUrl}
-                style="background: rgb(var(--color-secondary)); color: white;"
+                style="background: rgb(var(--color-primary)); color: white;"
                 class="px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -64,7 +64,7 @@ const spotifyUrl = podcastInfo?.spotifyUrl || "#";
             {latestEpisode && (
               <a
                 href={`/episodes/${latestEpisode.slug.current}`}
-                style="border-color: rgb(var(--color-secondary)); color: rgb(var(--color-secondary));"
+                style="border-color: rgb(var(--color-primary)); color: rgb(var(--color-primary));"
                 class="px-6 py-3 bg-transparent border-2 rounded-lg font-semibold hover:opacity-75 transition"
               >
                 Latest Episode
