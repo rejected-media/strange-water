@@ -18,6 +18,7 @@ import {
   getStaticPathsForEpisodes,
   getEpisode,
   getPodcast,
+  getTheme,
   formatDate,
   stripHTML
 } from '@podcast-framework/core';
@@ -33,8 +34,9 @@ export async function getStaticPaths() {
 // Get episode from props (passed from getStaticPaths)
 const { episode } = Astro.props as { episode: Episode };
 
-// Fetch podcast info for branding and show ID
+// Fetch podcast info and theme for branding
 const podcastInfo = await getPodcast();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 
 // Extract Spotify episode ID from spotifyLink and build embed URL
@@ -58,7 +60,13 @@ const pageTitle = `${episode.title} - ${siteName}`;
 const ogImage = episode.coverImage?.url || podcastInfo?.logo?.url;
 ---
 
-<BaseLayout title={pageTitle} description={metaDescription} ogImage={ogImage}>
+<BaseLayout
+  title={pageTitle}
+  description={metaDescription}
+  ogImage={ogImage}
+  podcastInfo={podcastInfo}
+  theme={theme}
+>
   <!-- Main Content -->
   <main class="max-w-4xl mx-auto px-4 py-12 flex-grow">
     <!-- Episode Header -->

@@ -10,16 +10,19 @@ export const prerender = true;
  * - Quick links to main sections
  */
 
-import { getPodcast } from '@podcast-framework/core';
+import { getPodcast, getTheme } from '@podcast-framework/core';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const podcastInfo = await getPodcast();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 ---
 
 <BaseLayout
   title={`Page Not Found - ${siteName}`}
   description="The page you're looking for doesn't exist."
+  podcastInfo={podcastInfo}
+  theme={theme}
 >
   <main class="max-w-4xl mx-auto px-4 py-20 flex-grow text-center">
     <!-- 404 Content -->

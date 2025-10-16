@@ -12,10 +12,11 @@ export const prerender = true;
  * - Integration with ContributionService API route
  */
 
-import { getPodcast } from '@podcast-framework/core';
+import { getPodcast, getTheme } from '@podcast-framework/core';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const podcastInfo = await getPodcast();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 
 // If podcast is not active, redirect to 404
@@ -28,6 +29,8 @@ if (!podcastInfo?.isActive) {
 <BaseLayout
   title={`Contribute - ${siteName}`}
   description={`Share your ideas and help shape the future of ${siteName}. Suggest episode topics, recommend guests, ask questions, or provide feedback.`}
+  podcastInfo={podcastInfo}
+  theme={theme}
 >
   <main class="max-w-3xl mx-auto px-4 py-12 flex-grow">
     <!-- Page Header -->
