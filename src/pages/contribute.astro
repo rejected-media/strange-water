@@ -13,7 +13,7 @@ export const prerender = true;
  */
 
 import { getPodcast } from '@podcast-framework/core';
-import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 
 const podcastInfo = await getPodcast();
 const siteName = podcastInfo?.name || "Podcast";

@@ -1,54 +1,244 @@
 ---
 /**
- * Homepage
+ * Homepage - CMS-Driven Configuration
  *
- * This is your podcast's homepage. Customize it to match your brand!
+ * This homepage uses Sanity CMS to control which sections are displayed.
+ * Configure your homepage from Sanity Studio under "Homepage Configuration".
  */
+export const prerender = true;
 
-import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
-import { getPodcast, getFeatured } from '@podcast-framework/core';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  getPodcast,
+  getFeatured,
+  getEpisodes,
+  getHomepageConfig,
+  getTheme
+} from '@podcast-framework/core';
 import FeaturedEpisodesCarousel from '@podcast-framework/core/components/FeaturedEpisodesCarousel.astro';
+import NewsletterSignup from '@podcast-framework/core/components/NewsletterSignup.astro';
+import { formatDate, stripHTML } from '@podcast-framework/core';
 
-// Fetch podcast info and featured episodes
+// Fetch data
 const podcastInfo = await getPodcast();
 const featuredEpisodes = await getFeatured();
+const episodes = await getEpisodes({ orderBy: 'desc' });
+const homepageConfig = await getHomepageConfig();
+const theme = await getTheme();
+
+const latestEpisode = episodes?.[0];
 const siteName = podcastInfo?.name || "My Podcast";
+const siteDescription = podcastInfo?.description || "A podcast about interesting topics";
+const spotifyUrl = podcastInfo?.spotifyUrl || "#";
 ---
 
 <BaseLayout
-  title={siteName}
-  description={podcastInfo?.description || "A podcast about interesting topics"}
+  title={`${siteName}${podcastInfo?.tagline ? ` - ${podcastInfo.tagline}` : ""}`}
+  description={siteDescription}
+  podcastInfo={podcastInfo}
+  theme={theme}
 >
-  <main class="max-w-6xl mx-auto px-4 py-12 flex-grow">
+  <main class="flex-grow">
     <!-- Hero Section -->
-    <div class="text-center mb-16">
-      <h1 class="text-5xl md:text-6xl font-bold mb-6">{siteName}</h1>
-      {podcastInfo?.tagline && (
-        <p class="text-xl md:text-2xl text-gray-600 mb-8">{podcastInfo.tagline}</p>
-      )}
-      {podcastInfo?.description && (
-        <p class="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          {podcastInfo.description}
-        </p>
-      )}
-    </div>
-
-    <!-- Featured Episodes Carousel -->
-    {featuredEpisodes && featuredEpisodes.length > 0 && (
-      <section class="mb-16">
-        <h2 class="text-3xl font-bold text-center mb-8">Featured Episodes</h2>
-        <FeaturedEpisodesCarousel episodes={featuredEpisodes} />
+    {(!homepageConfig?.hero || homepageConfig?.hero?.enabled !== false) && (
+      <section class="bg-gradient-to-b from-gray-50 to-white py-20">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+          <h1 class="text-5xl font-bold mb-4 text-gray-900">
+            {homepageConfig?.hero?.customHeadline || siteName}
+          </h1>
+          <p class="text-xl mb-8 text-gray-600">
+            {homepageConfig?.hero?.customDescription || siteDescription}
+          </p>
+          <div class="flex gap-4 justify-center flex-wrap">
+            {spotifyUrl && spotifyUrl !== "#" && (
+              <a
+                href={spotifyUrl}
+                class="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Listen on Spotify
+              </a>
+            )}
+            {latestEpisode && (
+              <a
+                href={`/episodes/${latestEpisode.slug.current}`}
+                class="px-6 py-3 bg-transparent text-gray-900 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition"
+              >
+                Latest Episode
+              </a>
+            )}
+          </div>
+        </div>
       </section>
     )}
 
-    <!-- Call to Action -->
-    <div class="text-center">
-      <a
-        href="/episodes"
-        class="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
-      >
-        Browse All Episodes
-      </a>
-    </div>
+    <!-- Featured Episodes Carousel -->
+    {(!homepageConfig?.featuredEpisodes || homepageConfig?.featuredEpisodes?.enabled !== false) && featuredEpisodes && featuredEpisodes.length > 0 && (
+      <FeaturedEpisodesCarousel
+        episodes={featuredEpisodes}
+        autoProgressInterval={homepageConfig?.featuredEpisodes?.interval ? homepageConfig.featuredEpisodes.interval * 1000 : 6000}
+      />
+    )}
+
+    <!-- Recent Episodes Section -->
+    {(!homepageConfig?.recentEpisodes || homepageConfig?.recentEpisodes?.enabled !== false) && latestEpisode && (
+      <section class="max-w-6xl mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold mb-8 text-gray-900">
+          {homepageConfig?.recentEpisodes?.title || 'Latest Episode'}
+        </h2>
+        <a
+          href={`/episodes/${latestEpisode.slug.current}`}
+          class="block bg-white rounded-lg shadow-md hover:shadow-xl border border-gray-200 hover:border-blue-300 transition p-6"
+        >
+          <div class="flex flex-col md:flex-row items-start gap-6">
+            {latestEpisode.coverImage?.url ? (
+              <img
+                src={latestEpisode.coverImage.url}
+                alt={latestEpisode.title}
+                class="flex-shrink-0 w-32 h-32 rounded-lg object-cover"
+              />
+            ) : podcastInfo?.logo?.url ? (
+              <img
+                src={podcastInfo.logo.url}
+                alt={siteName}
+                class="flex-shrink-0 w-32 h-32 rounded-lg object-cover"
+              />
+            ) : (
+              <div class="flex-shrink-0 w-32 h-32 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span class="text-3xl font-bold text-blue-600">{latestEpisode.episodeNumber}</span>
+              </div>
+            )}
+            <div class="flex-grow min-w-0">
+              <p class="text-sm uppercase tracking-wide mb-1 text-gray-500">
+                Episode {latestEpisode.episodeNumber}
+              </p>
+              <h3 class="text-xl font-semibold mb-2 text-gray-900">
+                {latestEpisode.title}
+              </h3>
+              <p class="mb-3 line-clamp-2 text-gray-600">
+                {stripHTML(latestEpisode.description)}
+              </p>
+              <div class="flex gap-4 text-sm text-gray-500">
+                <span>{formatDate(latestEpisode.publishDate)}</span>
+                {latestEpisode.duration && (
+                  <>
+                    <span>•</span>
+                    <span>{latestEpisode.duration}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </a>
+      </section>
+    )}
+
+    <!-- About Section -->
+    {(!homepageConfig?.about || homepageConfig?.about?.enabled !== false) && (
+      <section class="bg-gray-50 py-16">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2 class="text-3xl font-bold mb-6 text-gray-900">
+            {homepageConfig?.about?.title || 'About the Show'}
+          </h2>
+          {homepageConfig?.about?.content ? (
+            <p class="text-lg leading-relaxed text-gray-700">
+              {homepageConfig.about.content}
+            </p>
+          ) : (
+            <>
+              {siteDescription && (
+                <p class="text-lg leading-relaxed mb-4 text-gray-700">
+                  {siteDescription}
+                </p>
+              )}
+              <p class="text-lg leading-relaxed text-gray-700">
+                Each episode dives into the topics and conversations that matter most
+                to our community, bringing you insights and perspectives from across
+                the ecosystem.
+              </p>
+            </>
+          )}
+        </div>
+      </section>
+    )}
+
+    <!-- Subscribe Section -->
+    {(!homepageConfig?.subscribe || homepageConfig?.subscribe?.enabled !== false) && (
+      <section class="py-16">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold mb-3 text-gray-900">
+              {homepageConfig?.subscribe?.title || `Subscribe to ${siteName}`}
+            </h2>
+            <p class="text-lg text-gray-600">
+              {homepageConfig?.subscribe?.description || 'Get notified when new episodes are released'}
+            </p>
+          </div>
+
+          <!-- Newsletter Signup (if enabled) -->
+          {(!homepageConfig?.newsletter || homepageConfig?.newsletter?.enabled !== false) && (
+            <div class="mb-8 flex justify-center">
+              <NewsletterSignup variant="inline" />
+            </div>
+          )}
+
+          <div class="flex flex-wrap gap-4 justify-center">
+            {podcastInfo?.spotifyUrl && (
+              <a
+                href={podcastInfo.spotifyUrl}
+                class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium inline-flex items-center gap-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                Spotify
+              </a>
+            )}
+            {podcastInfo?.appleUrl && (
+              <a
+                href={podcastInfo.appleUrl}
+                class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium inline-flex items-center gap-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2.182c5.423 0 9.818 4.395 9.818 9.818 0 5.423-4.395 9.818-9.818 9.818-5.423 0-9.818-4.395-9.818-9.818 0-5.423 4.395-9.818 9.818-9.818zM12 5.455c-1.8 0-3.273 1.472-3.273 3.272 0 1.801 1.472 3.273 3.273 3.273s3.273-1.472 3.273-3.273c0-1.8-1.472-3.272-3.273-3.272zm0 1.636c.905 0 1.636.731 1.636 1.636 0 .905-.731 1.637-1.636 1.637-.905 0-1.636-.732-1.636-1.637 0-.905.731-1.636 1.636-1.636zm0 4.364c-2.168 0-3.927 1.759-3.927 3.927v2.182c0 .452.366.818.818.818h6.218c.452 0 .818-.366.818-.818v-2.182c0-2.168-1.759-3.927-3.927-3.927z"/>
+                </svg>
+                Apple Podcasts
+              </a>
+            )}
+            {podcastInfo?.youtubeUrl && (
+              <a
+                href={podcastInfo.youtubeUrl}
+                class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium inline-flex items-center gap-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                YouTube
+              </a>
+            )}
+            {podcastInfo?.rssUrl && (
+              <a
+                href={podcastInfo.rssUrl}
+                class="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium inline-flex items-center gap-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.755-23.954-24-24v4.812z"/>
+                </svg>
+                RSS Feed
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+    )}
   </main>
 </BaseLayout>

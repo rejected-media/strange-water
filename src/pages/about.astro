@@ -14,23 +14,24 @@ export const prerender = true;
  * - Fallback content if no CMS config exists
  */
 
-import { getPodcast, getAboutPageConfig } from '@podcast-framework/core';
-import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
+import { getPodcast, getAboutPageConfig, getTheme } from '@podcast-framework/core';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import BlockContent from '@podcast-framework/core/components/BlockContent.astro';
 
 // Fetch data from Sanity
 const podcastInfo = await getPodcast();
 const aboutConfig = await getAboutPageConfig();
+const theme = await getTheme();
 const siteName = podcastInfo?.name || "Podcast";
 
 // Fallback to default content if no config exists
 const hasConfig = !!aboutConfig;
 ---
-
-
 <BaseLayout
   title={`About - ${siteName}`}
   description={`Learn about ${siteName}, a podcast exploring Ethereum and Web3 through conversations with builders, researchers, and visionaries.`}
+  podcastInfo={podcastInfo}
+  theme={theme}
 >
   <main class="max-w-4xl mx-auto px-4 py-12 flex-grow">
     <!-- Page Header -->
@@ -62,7 +63,7 @@ const hasConfig = !!aboutConfig;
 
             {aboutConfig.hostsSection.layout === 'cards' ? (
               <div class="space-y-6">
-                {aboutConfig.hostsSection.hosts.map((host) => (
+                {aboutConfig.hostsSection.hosts.map((host: any) => (
                   <div class="flex flex-col md:flex-row items-start gap-4">
                     {host.photo?.url && (
                       <img
@@ -114,7 +115,7 @@ const hasConfig = !!aboutConfig;
               </div>
             ) : (
               <div class="space-y-4">
-                {aboutConfig.hostsSection.hosts.map((host) => (
+                {aboutConfig.hostsSection.hosts.map((host: any) => (
                   <div>
                     <h3 class="text-lg font-semibold mb-1">{host.name}</h3>
                     {host.bio && (
@@ -141,8 +142,8 @@ const hasConfig = !!aboutConfig;
         {aboutConfig.customSections && aboutConfig.customSections.length > 0 && (
           <>
             {aboutConfig.customSections
-              .sort((a, b) => (a.order || 100) - (b.order || 100))
-              .map((section) => (
+              .sort((a: any, b: any) => (a.order || 100) - (b.order || 100))
+              .map((section: any) => (
                 <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
                   <h2 class="text-2xl font-semibold mb-4">{section.title}</h2>
                   <BlockContent blocks={section.content} />
@@ -175,10 +176,10 @@ const hasConfig = !!aboutConfig;
                   Spotify
                 </a>
               )}
-              {podcastInfo?.applePodcastsUrl && (
+              {podcastInfo?.appleUrl && (
                 <a
-                  href={podcastInfo.applePodcastsUrl}
-                  class="px-6 py-3 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-900 transition"
+                  href={podcastInfo.appleUrl}
+                  class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -283,10 +284,10 @@ const hasConfig = !!aboutConfig;
                 Spotify
               </a>
             )}
-            {podcastInfo?.applePodcastsUrl && (
+            {podcastInfo?.appleUrl && (
               <a
-                href={podcastInfo.applePodcastsUrl}
-                class="px-6 py-3 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-900 transition"
+                href={podcastInfo.appleUrl}
+                class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
                 target="_blank"
                 rel="noopener noreferrer"
               >

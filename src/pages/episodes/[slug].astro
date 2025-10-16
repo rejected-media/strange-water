@@ -22,7 +22,7 @@ import {
   stripHTML
 } from '@podcast-framework/core';
 import type { Episode } from '@podcast-framework/core';
-import BaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import TranscriptViewer from '@podcast-framework/core/components/TranscriptViewer.astro';
 
 // Generate static paths for all episodes at build time
@@ -81,7 +81,7 @@ const ogImage = episode.coverImage?.url || podcastInfo?.logo?.url;
     </div>
 
     <!-- Hosts and Guests Section -->
-    {(episode.hosts?.length > 0 || episode.guests?.length > 0) && (
+    {((episode.hosts?.length ?? 0) > 0 || (episode.guests?.length ?? 0) > 0) && (
       <div class="mb-8 flex flex-col md:flex-row gap-6 md:items-start">
         <!-- Hosts Section -->
         {episode.hosts && episode.hosts.length > 0 && (

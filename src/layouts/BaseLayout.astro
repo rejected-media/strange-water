@@ -1,0 +1,27 @@
+---
+/**
+ * Base Layout for Podcast Site
+ *
+ * This layout imports global styles and uses the framework's BaseLayout
+ */
+import FrameworkBaseLayout from '@podcast-framework/core/layouts/BaseLayout.astro';
+import type { Theme, PodcastInfo } from '@podcast-framework/core';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  podcastInfo?: PodcastInfo;
+  theme?: Theme;
+  gaId?: string;
+  structuredData?: Record<string, any>;
+}
+
+const props = Astro.props;
+---
+
+<FrameworkBaseLayout {...props}>
+  <slot name="head" slot="head" />
+  <slot />
+</FrameworkBaseLayout>
